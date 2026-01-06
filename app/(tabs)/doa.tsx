@@ -1,5 +1,4 @@
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import axios from "axios";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -12,25 +11,22 @@ import {
   View,
 } from "react-native";
 
-interface Surat {
-  nomor: number;
+interface Doa {
+  id: number;
   nama: string;
-  namaLatin: string;
-  jumlahAyat: number;
-  tempatTurun: string;
-  arti: string;
-  deskripsi: string;
+  tentang: string;
+  tag: string[];
 }
 
-export default function Index() {
-  const [surat, setSurat] = useState<Surat[]>([]);
+export default function DetailDoa() {
+  const [doa, setDoa] = useState<Doa[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get("https://equran.id/api/v2/surat")
+      .get("https://equran.id/api/doa")
       .then((res) => {
-        setSurat(res.data.data);
+        setDoa(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -43,7 +39,7 @@ export default function Index() {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#00a88cff" />
-        <Text style={styles.loadingText}>Memuat Daftar Surat...</Text>
+        <Text style={styles.loadingText}>Memuat daftar doa...</Text>
       </View>
     );
   }
@@ -57,41 +53,36 @@ export default function Index() {
         </Text>
         <Text style={styles.headerSubtitle}>Daftar Doa</Text>
       </View>
-      {surat.map((item) => (
+      {doa.map((item) => (
         <Pressable
-          key={item.nomor}
-          style={({ pressed }) => [styles.card, { opacity: pressed ? 0.8 : 1 }]}
+          key={item.id}
+          style={({ pressed }) => [
+            styles.doaCard,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+          android_ripple={{ color: "#e0f2f1" }}
           onPress={() =>
             router.push({
-              pathname: "/surat/[id]",
-              params: { id: item.nomor.toString() },
+              pathname: "/doa/[id]",
+              params: { id: item.id.toString() },
             })
           }
         >
-          <View style={styles.cardContent}>
-            {/* Sisi Kiri: Nomor & Nama Latin */}
+          <View style={styles.cardInternal}>
             <View style={styles.leftSection}>
-              <View style={styles.numberWrapper}>
-                <Text style={styles.numberText}>{item.nomor}</Text>
+              <View style={styles.numberCircle}>
+                <Text style={styles.numberText}>{item.id}</Text>
               </View>
-              <View style={styles.infoWrapper}>
-                <Text style={styles.latinName}>{item.namaLatin}</Text>
-                <Text style={styles.subInfo}>
-                  {item.tempatTurun} • {item.jumlahAyat} Ayat
+              <View style={styles.textContainer}>
+                <Text style={styles.doaTitle} numberOfLines={1}>
+                  {item.nama}
+                </Text>
+                <Text style={styles.subtitleText} numberOfLines={1}>
+                  Klik untuk melihat detail doa
                 </Text>
               </View>
             </View>
-
-            {/* Sisi Kanan: Nama Arab */}
-            <View style={styles.rightSection}>
-              <Text style={styles.arabicName}>{item.nama}</Text>
-              <FontAwesome
-                name="angle-right"
-                size={18}
-                color="#ccc"
-                style={{ marginLeft: 10 }}
-              />
-            </View>
+            <Feather name="chevron-right" size={20} color="#00a88cff" />
           </View>
         </Pressable>
       ))}
@@ -130,20 +121,22 @@ const styles = StyleSheet.create({
     color: "#e0f2f1",
     marginTop: 4,
   },
-  card: {
+  doaCard: {
     backgroundColor: "#fff",
     borderRadius: 15,
     marginRight: 16,
     marginLeft: 16,
     marginTop: 16,
     padding: 16,
-    elevation: 2,
+    // Shadow untuk iOS
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    // Elevation untuk Android
+    elevation: 2,
   },
-  cardContent: {
+  cardInternal: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -153,43 +146,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
   },
-  numberWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+  numberCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#e0f2f1",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
-    transform: [{ rotate: "45deg" }],
   },
   numberText: {
     color: "#00a88cff",
     fontWeight: "bold",
     fontSize: 14,
-    transform: [{ rotate: "-45deg" }],
   },
-  infoWrapper: {
-    justifyContent: "center",
+  textContainer: {
+    flex: 1,
+    marginRight: 10,
   },
-  latinName: {
+  doaTitle: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#333",
+    marginBottom: 2,
   },
-  subInfo: {
+  subtitleText: {
     fontSize: 12,
-    color: "#888",
-    textTransform: "uppercase",
-    marginTop: 2,
-  },
-  rightSection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  arabicName: {
-    fontSize: 20,
-    color: "#00a88cff",
-    fontWeight: "500",
+    color: "#999",
   },
 });

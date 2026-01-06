@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -25,6 +26,8 @@ interface Surat {
   nomor: number;
   nama: string;
   namaLatin: string;
+  arti: string;
+  jumlahAyat: number;
 }
 
 export default function SuratDetail() {
@@ -42,172 +45,264 @@ export default function SuratDetail() {
       ...prev,
       [ayatNumber]: {
         ...prev[ayatNumber],
-        [type]: !prev[ayatNumber]?.[type] || false,
+        [type]: !prev[ayatNumber]?.[type],
       },
     }));
   };
 
   useEffect(() => {
-    axios
-      .get(`https://equran.id/api/v2/surat/${id}`)
-      .then((res) => {
-        setSurat(res.data.data);
-        setAyat(res.data.data.ayat);
-        setLoading(false);
-      })
-      .catch((err) => console.error("Error:", err));
-  }, [id]);
+    const fetchData = async () => {
+      try {
+        const resSurat = await axios.get(
+          `https://equran.id/api/v2/surat/${id}`
+        );
+        const resTafsir = await axios.get(
+          `https://equran.id/api/v2/tafsir/${id}`
+        );
 
-  useEffect(() => {
-    axios
-      .get(`https://equran.id/api/v2/tafsir/${id}`)
-      .then((res) => {
-        setTafsir(res.data.data.tafsir);
+        setSurat(resSurat.data.data);
+        setAyat(resSurat.data.data.ayat);
+        setTafsir(resTafsir.data.data.tafsir);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => console.error("Error:", err));
+      }
+    };
+    fetchData();
   }, [id]);
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Memuat data...</Text>
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#00a88cff" />
+        <Text style={styles.loadingText}>Memuat ayat-ayat...</Text>
       </View>
     );
   }
+
   return (
-    <ScrollView>
-      <View
-        style={{
-          height: 100,
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#46C9B0",
-        }}
-      >
-        <Text style={{ fontSize: 28 }}>{surat?.nama}</Text>
-        <Text style={{ fontSize: 16 }}>{surat?.namaLatin}</Text>
+    <ScrollView style={{ backgroundColor: "#fff" }}>
+      <View style={styles.headerCard}>
+        <Text style={styles.headerArabic}>{surat?.nama}</Text>
+        <Text style={styles.headerLatin}>{surat?.namaLatin}</Text>
+        <Text style={styles.headerInfo}>
+          {surat?.arti} • {surat?.jumlahAyat} Ayat
+        </Text>
       </View>
-      {ayat.map((ayat) => (
-        <View
-          key={ayat.nomorAyat}
-          style={{
-            padding: 20,
-            flex: 1,
-          }}
-        >
-          <View>
-            <View
-              style={{
-                backgroundColor: "#46C9B0",
-                width: 30,
-                height: 30,
-                borderRadius: 50,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text>{ayat.nomorAyat}</Text>
-            </View>
-            <Text style={{ fontSize: 28, textAlign: "right" }}>
-              {ayat.teksArab}
-            </Text>
 
-            <View
-              style={{
-                backgroundColor: "#46c9b145",
-                padding: 10,
-                borderRadius: 15,
-              }}
-            >
-              <Text
-                style={{
-                  fontStyle: "italic",
-                  fontWeight: "bold",
-                }}
-              >
-                {ayat.teksLatin}
-              </Text>
+      <View style={styles.listContainer}>
+        {ayat.map((item) => (
+          <View key={item.nomorAyat} style={styles.ayatItem}>
+            <View style={styles.ayatHeader}>
+              <View style={styles.ayatNumberBadge}>
+                <Text style={styles.ayatNumberText}>{item.nomorAyat}</Text>
+              </View>
             </View>
 
-            <TouchableOpacity
-              onPress={() => toggleExpanded(ayat.nomorAyat, "arti")}
-              style={{
-                backgroundColor: "#46C9B0",
-                padding: 10,
-                borderRadius: 15,
-                marginTop: 10,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{ fontWeight: "bold", color: "white", fontSize: 16 }}
+            <Text style={styles.arabicText}>{item.teksArab}</Text>
+
+            <View style={styles.latinContainer}>
+              <Text style={styles.latinText}>{item.teksLatin}</Text>
+            </View>
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                onPress={() => toggleExpanded(item.nomorAyat, "arti")}
+                style={[
+                  styles.actionButton,
+                  expanded[item.nomorAyat]?.arti && styles.activeButton,
+                ]}
               >
-                Arti
-              </Text>
-              <Text style={{ color: "white" }}>
-                {expanded[ayat.nomorAyat]?.arti ? "-" : "+"}
-              </Text>
-            </TouchableOpacity>
-            {expanded[ayat.nomorAyat]?.arti && (
-              <View
-                style={{
-                  padding: 10,
-                  backgroundColor: "#f0f0f0",
-                  borderRadius: 15,
-                  marginTop: 5,
-                }}
-              >
-                <Text style={{ textAlign: "justify", fontSize: 16 }}>
-                  {ayat.teksIndonesia}
+                <Text
+                  style={[
+                    styles.actionButtonText,
+                    expanded[item.nomorAyat]?.arti && styles.activeButtonText,
+                  ]}
+                >
+                  Terjemahan
                 </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => toggleExpanded(item.nomorAyat, "tafsir")}
+                style={[
+                  styles.actionButton,
+                  expanded[item.nomorAyat]?.tafsir && styles.activeButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.actionButtonText,
+                    expanded[item.nomorAyat]?.tafsir && styles.activeButtonText,
+                  ]}
+                >
+                  Tafsir
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {expanded[item.nomorAyat]?.arti && (
+              <View style={styles.expandableBox}>
+                <Text style={styles.translationText}>{item.teksIndonesia}</Text>
               </View>
             )}
 
-            <TouchableOpacity
-              onPress={() => toggleExpanded(ayat.nomorAyat, "tafsir")}
-              style={{
-                backgroundColor: "#46C9B0",
-                padding: 10,
-                borderRadius: 15,
-                marginTop: 10,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{ fontWeight: "bold", color: "white", fontSize: 16 }}
-              >
-                Tafsir
-              </Text>
-              <Text style={{ color: "white" }}>
-                {expanded[ayat.nomorAyat]?.tafsir ? "-" : "+"}
-              </Text>
-            </TouchableOpacity>
-            {expanded[ayat.nomorAyat]?.tafsir && (
+            {expanded[item.nomorAyat]?.tafsir && (
               <View
-                style={{
-                  padding: 10,
-                  backgroundColor: "#f0f0f0",
-                  borderRadius: 15,
-                  marginTop: 5,
-                }}
+                style={[styles.expandableBox, { backgroundColor: "#e0f2f1" }]}
               >
-                <Text style={{ textAlign: "justify", fontSize: 16 }}>
-                  {tafsir.find((t) => t.ayat === ayat.nomorAyat)?.teks ||
+                <Text style={styles.sectionLabel}>Tafsir Ringkas:</Text>
+                <Text style={styles.tafsirText}>
+                  {tafsir.find((t) => t.ayat === item.nomorAyat)?.teks ||
                     "Tafsir tidak tersedia"}
                 </Text>
               </View>
             )}
+
+            <View style={styles.divider} />
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    color: "#00a88cff",
+  },
+  headerCard: {
+    backgroundColor: "#00a88cff",
+    paddingVertical: 25,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    elevation: 4,
+  },
+  headerArabic: {
+    fontSize: 32,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  headerLatin: {
+    fontSize: 18,
+    color: "#fff",
+    fontWeight: "600",
+    marginTop: 5,
+    textAlign: "center",
+  },
+  headerInfo: {
+    fontSize: 13,
+    color: "#e0f2f1",
+    marginTop: 5,
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
+  listContainer: {
+    padding: 15,
+  },
+  ayatItem: {
+    marginBottom: 20,
+  },
+  ayatHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  ayatNumberBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#00a88cff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  ayatNumberText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  ayatActions: {
+    flexDirection: "row",
+  },
+  arabicText: {
+    fontSize: 26,
+    textAlign: "right",
+    lineHeight: 50,
+    color: "#222",
+    marginBottom: 15,
+    fontWeight: "500",
+  },
+  latinContainer: {
+    borderLeftWidth: 3,
+    borderLeftColor: "#00a88cff",
+    paddingLeft: 12,
+    marginBottom: 15,
+  },
+  latinText: {
+    fontSize: 14,
+    color: "#00a88cff",
+    fontStyle: "italic",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  actionButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#00a88cff",
+  },
+  activeButton: {
+    backgroundColor: "#00a88cff",
+  },
+  actionButtonText: {
+    color: "#00a88cff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  activeButtonText: {
+    color: "#fff",
+  },
+  expandableBox: {
+    backgroundColor: "#f5f5f5",
+    padding: 15,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  translationText: {
+    fontSize: 15,
+    color: "#444",
+    lineHeight: 22,
+    textAlign: "justify",
+  },
+  sectionLabel: {
+    fontWeight: "bold",
+    color: "#00a88cff",
+    marginBottom: 5,
+    fontSize: 13,
+  },
+  tafsirText: {
+    fontSize: 14,
+    color: "#555",
+    lineHeight: 21,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#eee",
+    marginTop: 25,
+  },
+});
