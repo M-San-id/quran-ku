@@ -1,7 +1,13 @@
 import axios from "axios";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View, StyleSheet, SafeAreaView } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 interface Doa {
   id: number;
@@ -49,52 +55,46 @@ export default function DoaDetail() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Header Section */}
-        <View style={styles.headerCard}>
-          <View style={styles.idBadge}>
-            <Text style={styles.idText}>{doa.id}</Text>
-          </View>
-          <Text style={styles.titleText}>{doa.nama}</Text>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.headerCard}>
+        <View style={styles.idBadge}>
+          <Text style={styles.idText}>{doa.id}</Text>
         </View>
+        <Text style={styles.titleText}>{doa.nama}</Text>
+      </View>
 
-        {/* Content Card */}
-        <View style={styles.contentCard}>
-          <Text style={styles.arabicText}>{doa.ar}</Text>
-          
-          <View style={styles.divider} />
-          
-          <Text style={styles.transliterationText}>{doa.tr}</Text>
-          <Text style={styles.translationText}>"{doa.idn}"</Text>
-        </View>
+      <View style={styles.contentCard}>
+        <Text style={styles.arabicText}>{doa.ar}</Text>
 
-        {/* Info Section */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>Tentang Doa</Text>
-          <Text style={styles.descriptionText}>{doa.tentang || "Tidak ada deskripsi tambahan."}</Text>
-          
-          <Text style={styles.sectionTitle}>Tag</Text>
-          <View style={styles.tagContainer}>
-            {doa.tag.map((tag, index) => (
-              <View key={index} style={styles.tagBadge}>
-                <Text style={styles.tagText}>#{tag}</Text>
-              </View>
-            ))}
-          </View>
+        <View style={styles.divider} />
+
+        <Text style={styles.transliterationText}>{doa.tr}</Text>
+        <Text style={styles.translationText}>"{doa.idn}"</Text>
+      </View>
+
+      <View style={styles.infoSection}>
+        <Text style={styles.sectionTitle}>Tentang Doa</Text>
+        <Text style={styles.descriptionText}>
+          {doa.tentang || "Tidak ada deskripsi tambahan."}
+        </Text>
+
+        <Text style={styles.sectionTitle}>Tag</Text>
+        <View style={styles.tagContainer}>
+          {doa.tag.map((tag, index) => (
+            <View key={index} style={styles.tagBadge}>
+              <Text style={styles.tagText}>#{tag}</Text>
+            </View>
+          ))}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
   scrollContainer: {
     paddingBottom: 30,
+    backgroundColor: "#f8f9fa",
   },
   centerContainer: {
     flex: 1,

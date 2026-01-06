@@ -69,7 +69,6 @@ export default function Index() {
           }
         >
           <View style={styles.cardContent}>
-            {/* Sisi Kiri: Nomor & Nama Latin */}
             <View style={styles.leftSection}>
               <View style={styles.numberWrapper}>
                 <Text style={styles.numberText}>{item.nomor}</Text>
@@ -82,7 +81,6 @@ export default function Index() {
               </View>
             </View>
 
-            {/* Sisi Kanan: Nama Arab */}
             <View style={styles.rightSection}>
               <Text style={styles.arabicName}>{item.nama}</Text>
               <FontAwesome
