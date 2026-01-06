@@ -55,8 +55,9 @@ export default function Index() {
             height: 100,
           }}
           onPress={() =>
-            router.navigate({
-              pathname: "/surat{id}",
+            router.push({
+              pathname: "/surat/[id]",
+              params: { id: surat.nomor.toString() },
             })
           }
         >
@@ -68,7 +69,7 @@ export default function Index() {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 22, fontWeight: "bold" }}>
+            <Text style={{ fontSize: 24, fontWeight: "bold" }}>
               <Feather name="book-open" size={22} color="black" /> {surat.nama}
             </Text>
             <Text>{surat.jumlahAyat} ayat</Text>
