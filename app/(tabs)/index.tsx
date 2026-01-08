@@ -55,7 +55,7 @@ export default function Index() {
           <Feather name="book-open" size={24} color="white" /> {""}
           QuranKu
         </Text>
-        <Text style={styles.headerSubtitle}>Daftar Doa</Text>
+        <Text style={styles.headerSubtitle}>Daftar Surat</Text>
       </View>
       {surat.map((item) => (
         <Pressable
@@ -109,16 +109,16 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   header: {
-    padding: 25,
     backgroundColor: "#00a88cff",
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     elevation: 4,
-    height: 120,
+    height: 150,
     alignItems: "center",
     justifyContent: "center",
   },
   headerTitle: {
+    marginTop: 30,
     fontSize: 24,
     fontWeight: "bold",
     color: "#fff",

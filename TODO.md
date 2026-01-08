@@ -1,0 +1,7 @@
+- Update header styles in search.tsx to match blue background and white text from index.tsx and doa/[id].tsx
+- Add Feather import for accordion chevron icons
+- Add state for tracking expanded accordion items
+- Initialize expanded state in handleSearch
+- Modify renderResult to implement accordion functionality with header and expandable content
+- Adjust resultCard and related styles for consistency (borderRadius 15, padding 16, etc.)
+- Add new styles for accordionHeader and accordionContent

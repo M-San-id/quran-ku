@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {
@@ -18,6 +19,16 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+        <Tabs.Screen
+          name="search"
+          options={{
+            title: "Pencarian",
+            tabBarIcon: ({ color }) => (
+              <Feather name="search" size={24} color={color} />
+            ),
+            headerShown: false,
+          }}
+        />
       <Tabs.Screen
         name="doa"
         options={{
@@ -27,7 +38,7 @@ export default function TabLayout() {
           ),
           headerShown: false,
         }}
-      />
+        />
     </Tabs>
   );
 }
