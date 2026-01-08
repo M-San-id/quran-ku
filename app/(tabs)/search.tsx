@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 
+
 interface GenericData {
   id_surat?: number;
   nama_surat?: string;
@@ -113,6 +114,7 @@ export default function SearchScreen() {
     }
   };
 
+
   const renderAyatContent = (data: GenericData) => (
     <View style={styles.contentWrapper}>
       <View style={styles.metaInfo}>
@@ -162,12 +164,6 @@ export default function SearchScreen() {
             <Text style={styles.doaMetaText}>Sumber: {data.sumber}</Text>
           </View>
         )}
-        {data.catatan && (
-          <View style={styles.doaMetaRow}>
-            <Feather name="info" size={12} color="#6b7280" />
-            <Text style={styles.doaMetaText}>Catatan: {data.catatan}</Text>
-          </View>
-        )}
       </View>
     </View>
   );
@@ -198,8 +194,8 @@ export default function SearchScreen() {
         contentToRender = renderDoaContent(data);
         break;
       default:
-        titleHeader = "Hasil Lainnya";
-        previewText = "Ketuk untuk melihat detail";
+        titleHeader = "Detail";
+        previewText = "Klik untuk melihat";
     }
 
     return (
@@ -208,9 +204,6 @@ export default function SearchScreen() {
           <View style={[styles.typeBadge, { backgroundColor: color }]}>
             <Text style={styles.typeText}>{item.tipe.toUpperCase()}</Text>
           </View>
-          <Text style={styles.scoreText}>
-            {item.relevansi} ({(item.skor * 100).toFixed(0)}%)
-          </Text>
         </View>
 
         <TouchableOpacity onPress={() => toggleExpanded(index)}>
@@ -225,7 +218,7 @@ export default function SearchScreen() {
             </View>
             <Feather
               name={isExpanded ? "chevron-up" : "chevron-down"}
-              size={24}
+              size={22}
               color="#9ca3af"
             />
           </View>
@@ -244,12 +237,6 @@ export default function SearchScreen() {
       style={styles.container}
     >
       <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
-        {/* <View style={styles.header}>
-          <Text style={styles.title}>Pencarian </Text>
-          <Text style={styles.subtitle}>
-            Cari ayat, tafsir, atau doa dengan pencarian semantik
-          </Text>
-        </View> */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>
             <Feather name="book-open" size={24} color="white" /> {""}
@@ -261,7 +248,7 @@ export default function SearchScreen() {
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Cari sesuatu... "
+            placeholder="Cari sesuatu..."
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={() => handleSearch(searchQuery)}
@@ -278,7 +265,37 @@ export default function SearchScreen() {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.examplesContainer}>
+          <Text style={styles.examplesTitle}>
+            Masukkan setidaknya 2 kosakata untuk hasil yang akurat.
+          </Text>
+          <Text style={styles.examplesTitle}>Contoh:</Text>
+          <View style={styles.examplesWrapper}>
+            {exampleQueries.map((query, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.exampleChip}
+                onPress={() => {
+                  setSearchQuery(query);
+                  handleSearch(query);
+                }}
+              >
+                <Text style={styles.exampleText}>{query}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         <View style={styles.resultsContainer}>
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Feather name="alert-circle" size={18} color="#dc2626" />
+              <Text style={styles.errorText}>
+                Error... Coba Lagi Beberapa Saat...
+              </Text>
+            </View>
+          ) : null}
+
           {results.length > 0 && (
             <Text style={styles.resultsTitle}>
               Ditemukan {results.length} hasil
@@ -292,8 +309,13 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafa" },
-  scrollView: { flex: 1 },
+  container: {
+    flex: 1,
+    backgroundColor: "#f8fafa",
+  },
+  scrollView: {
+    flex: 1,
+  },
   header: {
     backgroundColor: "#00a88cff",
     borderBottomLeftRadius: 25,
@@ -337,7 +359,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 3,
   },
-  resultsContainer: { padding: 20 },
+
+  examplesContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  examplesTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#9ca3af",
+    marginBottom: 8,
+  },
+  examplesWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  exampleChip: {
+    backgroundColor: "#e0f2f1",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#00a88c",
+  },
+  exampleText: {
+    fontSize: 12,
+    color: "#00a88c",
+    fontWeight: "500",
+  },
+
+  resultsContainer: {
+    padding: 20,
+  },
   resultsTitle: {
     fontSize: 14,
     fontWeight: "700",
@@ -367,10 +421,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "800",
   },
-  scoreText: {
-    fontSize: 10,
-    color: "#6b7280",
-  },
   accordionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -394,9 +444,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#f3f4f6",
     marginTop: 10,
   },
-  contentWrapper: {
-    gap: 10,
-  },
+  contentWrapper: { gap: 10 },
   metaInfo: {
     flexDirection: "row",
     alignItems: "center",
@@ -422,7 +470,11 @@ const styles = StyleSheet.create({
     textAlign: "right",
     lineHeight: 45,
   },
-  latinText: { fontSize: 14, fontStyle: "italic", color: "#00a88c" },
+  latinText: {
+    fontSize: 14,
+    fontStyle: "italic",
+    color: "#00a88c",
+  },
   translationContainer: {
     borderLeftWidth: 3,
     borderLeftColor: "#00a88c",
@@ -468,7 +520,6 @@ const styles = StyleSheet.create({
   },
   doaMetaContainer: {
     marginTop: 12,
-    gap: 8,
   },
   doaMetaRow: {
     flexDirection: "row",
@@ -478,5 +529,17 @@ const styles = StyleSheet.create({
   doaMetaText: {
     fontSize: 12,
     color: "#6b7280",
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#fee2e2",
+    padding: 10,
+    borderRadius: 10,
+  },
+  errorText: {
+    color: "#dc2626",
+    fontSize: 13,
   },
 });
