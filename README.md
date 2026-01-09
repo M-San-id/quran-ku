@@ -1,50 +1,108 @@
-# Welcome to your Expo app 👋
+# QuranKu 📖
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplikasi mobile Al-Qur'an digital yang memudahkan Anda untuk membaca, mencari, dan mempelajari Al-Qur'an beserta terjemahan, tafsir, dan kumpulan doa-doa.
 
-## Get started
+## ✨ Fitur Utama
 
-1. Install dependencies
+- **Daftar Surat Al-Qur'an** - Akses lengkap 114 surat dengan informasi detail
+- **Baca Al-Qur'an** - Teks Arab, Latin, dan terjemahan Indonesia
+- **Tafsir Al-Qur'an** - Tafsir ringkas untuk setiap ayat
+- **Pencarian Cerdas** - Cari ayat, tafsir, dan doa menggunakan vector search
+- **Kumpulan Doa** - Doa-doa pilihan dengan teks Arab, Latin, dan terjemahan
+- **UI Modern** - Antarmuka yang clean dan mudah digunakan
 
-   ```bash
-   npm install
-   ```
+## 🛠️ Tech Stack
 
-2. Start the app
+- **Framework**: [Expo](https://expo.dev/) / React Native
+- **Language**: TypeScript
+- **Navigation**: Expo Router
+- **HTTP Client**: Axios
+- **Icons**: Expo Vector Icons (Feather, FontAwesome, Ionicons)
+- **API**: [Equran.id API](https://equran.id/apidev)
 
-   ```bash
-   npx expo start
-   ```
+## 📱 Preview
 
-In the output, you'll find options to open the app in a
+### Halaman Utama
+- **Beranda**: Daftar surat Al-Qur'an dengan nomor urut, nama Arab & Latin, tempat turun, dan jumlah ayat
+- **Pencarian**: Fitur pencarian semantik untuk menemukan ayat, tafsir, atau doa berdasarkan kata kunci
+- **Doa**: Koleksi doa-doa pilihan dengan teks lengkap
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Detail Surat
+- Informasi surat (nama, arti, jumlah ayat)
+- Teks Arab dengan ukuran yang nyaman dibaca
+- Transliterasi Latin
+- Terjemahan Indonesia (expandable)
+- Tafsir ringkas (expandable)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Detail Doa
+- Teks Arab
+- Transliterasi
+- Terjemahan Indonesia
+- Keterangan dan tag kategori
 
-## Get a fresh project
+### Pencarian
+- Pencarian berbasis AI/vector search
+- Hasil mencakup ayat, tafsir, dan doa
+- Interface accordion untuk hasil pencarian
+- Skor relevansi untuk setiap hasil
 
-When you're ready, run:
+## 🚀 Instalasi
 
+1. Clone repository ini
 ```bash
-npm run reset-project
+git clone https://github.com/M-San-id/quran-ku.git
+cd quranku
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install dependencies
+```bash
+npm install
+# atau
+yarn install
+```
 
-## Learn more
+3. Jalankan aplikasi
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Scan QR code dengan Expo Go (Android/iOS) atau jalankan di emulator
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📂 Struktur Folder
 
-## Join the community
+```
+app/
+├── (tabs)/
+│   ├── index.tsx          # Halaman daftar surat
+│   ├── search.tsx         # Halaman pencarian
+│   ├── doa.tsx           # Halaman daftar doa
+│   └── _layout.tsx       # Layout tab navigation
+├── surat/
+│   └── [id].tsx          # Detail surat & ayat
+├── doa/
+│   └── [id].tsx          # Detail doa
+└── _layout.tsx           # Root layout
+```
 
-Join our community of developers creating universal apps.
+## 🎨 Skema Warna
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Primary**: `#00a88c` (Teal)
+- **Background**: `#f8fafa` (Light Gray)
+- **Text**: `#333` (Dark Gray)
+- **Accent**: `#e0f2f1` (Light Teal)
+
+## 🔌 API Endpoints
+
+Aplikasi ini menggunakan API dari [Equran.id](https://equran.id/apidev):
+
+- `GET /api/v2/surat` - Daftar surat
+- `GET /api/v2/surat/{id}` - Detail surat & ayat
+- `GET /api/v2/tafsir/{id}` - Tafsir surat
+- `GET /api/doa` - Daftar doa
+- `GET /api/doa/{id}` - Detail doa
+- `POST /api/vector` - Pencarian semantik
+
+
+---
+
+**Dibuat dengan 💕 oleh M-San-id
