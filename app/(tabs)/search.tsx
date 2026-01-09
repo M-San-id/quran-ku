@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 
-
 interface GenericData {
   id_surat?: number;
   nama_surat?: string;
@@ -29,7 +28,7 @@ interface GenericData {
 }
 
 interface SearchResult {
-  tipe: "ayat" | "tafsir" | "doa" | "surat";
+  tipe: "ayat" | "tafsir" | "doa";
   skor: number;
   relevansi: string;
   data: GenericData;
@@ -52,7 +51,6 @@ export default function SearchScreen() {
     "ayat tentang sabar",
     "doa untuk kesuksesan",
     "ayat tentang ilmu pengetahuan",
-    "surat tentang hari kiamat",
   ];
 
   const handleSearch = async (query: string) => {
@@ -71,9 +69,8 @@ export default function SearchScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           cari: query,
-          batas: 10,
-          tipe: ["ayat", "tafsir", "surat", "doa"],
-          skorMin: 0.3,
+          tipe: ["ayat", "tafsir", "doa"],
+          skorMin: 0.5,
         }),
       });
 
@@ -109,11 +106,8 @@ export default function SearchScreen() {
         return "#3b82f6";
       case "doa":
         return "#f59e0b";
-      default:
-        return "#6b7280";
     }
   };
-
 
   const renderAyatContent = (data: GenericData) => (
     <View style={styles.contentWrapper}>
@@ -193,9 +187,6 @@ export default function SearchScreen() {
         previewText = data.terjemahan || "";
         contentToRender = renderDoaContent(data);
         break;
-      default:
-        titleHeader = "Detail";
-        previewText = "Klik untuk melihat";
     }
 
     return (
