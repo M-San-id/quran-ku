@@ -44,7 +44,6 @@ Aplikasi mobile Al-Qur'an digital yang memudahkan Anda untuk membaca, mencari, d
 - Pencarian berbasis AI/vector search
 - Hasil mencakup ayat, tafsir, dan doa
 - Interface accordion untuk hasil pencarian
-- Skor relevansi untuk setiap hasil
 
 ## 🚀 Instalasi
 
