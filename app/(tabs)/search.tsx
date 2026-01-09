@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 
-interface GenericData {
+interface HasilData {
   id_surat?: number;
   nama_surat?: string;
   nama_surat_arab?: string;
@@ -27,22 +27,22 @@ interface GenericData {
   catatan?: string;
 }
 
-interface SearchResult {
+interface HasilPencarian {
   tipe: "ayat" | "tafsir" | "doa";
   skor: number;
   relevansi: string;
-  data: GenericData;
+  data: HasilData;
 }
 
 interface ApiResponse {
   status: string;
-  hasil: SearchResult[];
+  hasil: HasilPencarian[];
   jumlah: number;
 }
 
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<HasilPencarian[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState<boolean[]>([]);
@@ -109,28 +109,28 @@ export default function SearchScreen() {
     }
   };
 
-  const renderAyatContent = (data: GenericData) => (
+  const renderAyat = (data: HasilData) => (
     <View style={styles.contentWrapper}>
-      <View style={styles.metaInfo}>
-        <Text style={styles.metaLabel}>Surat:</Text>
-        <Text style={styles.metaValue}>
+      <View style={styles.info}>
+        <Text style={styles.label}>Surat:</Text>
+        <Text style={styles.value}>
           {data.nama_surat} ({data.nomor_ayat})
         </Text>
       </View>
       <View style={styles.divider} />
-      <Text style={styles.arabicText}>{data.teks_arab}</Text>
-      <Text style={styles.latinText}>{data.teks_latin}</Text>
+      <Text style={styles.textArab}>{data.teks_arab}</Text>
+      <Text style={styles.textLatin}>{data.teks_latin}</Text>
       <View style={styles.translationContainer}>
         <Text style={styles.terjemahanText}>{data.terjemahan_id}</Text>
       </View>
     </View>
   );
 
-  const renderTafsirContent = (data: GenericData) => (
+  const renderTafsir = (data: HasilData) => (
     <View style={styles.contentWrapper}>
-      <View style={styles.metaInfo}>
-        <Text style={styles.metaLabel}>Tafsir:</Text>
-        <Text style={styles.metaValue}>
+      <View style={styles.info}>
+        <Text style={styles.label}>Tafsir:</Text>
+        <Text style={styles.value}>
           {data.nama_surat} ayat {data.nomor_ayat}
         </Text>
       </View>
@@ -142,27 +142,27 @@ export default function SearchScreen() {
     </View>
   );
 
-  const renderDoaContent = (data: GenericData) => (
+  const renderDoa = (data: HasilData) => (
     <View style={styles.contentWrapper}>
       <Text style={styles.doaTitle}>{data.judul}</Text>
       <View style={styles.divider} />
-      <Text style={styles.arabicText}>{data.teks_arab}</Text>
-      <Text style={styles.latinText}>{data.teks_latin}</Text>
+      <Text style={styles.textArab}>{data.teks_arab}</Text>
+      <Text style={styles.textLatin}>{data.teks_latin}</Text>
       <View style={styles.translationContainer}>
         <Text style={styles.artiText}>"{data.terjemahan}"</Text>
       </View>
-      <View style={styles.doaMetaContainer}>
+      <View style={styles.doaContainer}>
         {data.sumber && (
-          <View style={styles.doaMetaRow}>
+          <View style={styles.doaRow}>
             <Feather name="book" size={12} color="#6b7280" />
-            <Text style={styles.doaMetaText}>Sumber: {data.sumber}</Text>
+            <Text style={styles.doaText}>Sumber: {data.sumber}</Text>
           </View>
         )}
       </View>
     </View>
   );
 
-  const renderResult = (item: SearchResult, index: number) => {
+  const renderHasil = (item: HasilPencarian, index: number) => {
     const isExpanded = expanded[index];
     const color = getTypeColor(item.tipe);
     const { data } = item;
@@ -175,17 +175,17 @@ export default function SearchScreen() {
       case "ayat":
         titleHeader = `QS. ${data.nama_surat}: ${data.nomor_ayat}`;
         previewText = data.terjemahan_id || "";
-        contentToRender = renderAyatContent(data);
+        contentToRender = renderAyat(data);
         break;
       case "tafsir":
         titleHeader = `Tafsir ${data.nama_surat}: ${data.nomor_ayat}`;
         previewText = data.isi || "";
-        contentToRender = renderTafsirContent(data);
+        contentToRender = renderTafsir(data);
         break;
       case "doa":
         titleHeader = data.judul || "Doa";
         previewText = data.terjemahan || "";
-        contentToRender = renderDoaContent(data);
+        contentToRender = renderDoa(data);
         break;
     }
 
@@ -292,7 +292,7 @@ export default function SearchScreen() {
               Ditemukan {results.length} hasil
             </Text>
           )}
-          {results.map((item, index) => renderResult(item, index))}
+          {results.map((item, index) => renderHasil(item, index))}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -436,17 +436,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   contentWrapper: { gap: 10 },
-  metaInfo: {
+  info: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
-  metaLabel: {
+  label: {
     fontSize: 12,
     fontWeight: "600",
     color: "#6b7280",
   },
-  metaValue: {
+  value: {
     fontSize: 12,
     color: "#374151",
   },
@@ -455,13 +455,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5e7eb",
     marginVertical: 4,
   },
-  arabicText: {
+  textArab: {
     fontSize: 24,
     color: "#1f2937",
     textAlign: "right",
     lineHeight: 45,
   },
-  latinText: {
+  textLatin: {
     fontSize: 14,
     fontStyle: "italic",
     color: "#00a88c",
@@ -509,15 +509,15 @@ const styles = StyleSheet.create({
     color: "#4b5563",
     fontStyle: "italic",
   },
-  doaMetaContainer: {
+  doaContainer: {
     marginTop: 12,
   },
-  doaMetaRow: {
+  doaRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  doaMetaText: {
+  doaText: {
     fontSize: 12,
     color: "#6b7280",
   },
