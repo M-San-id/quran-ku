@@ -29,7 +29,6 @@ interface HasilData {
 
 interface HasilPencarian {
   tipe: "ayat" | "tafsir" | "doa";
-  skor: number;
   relevansi: string;
   data: HasilData;
 }
