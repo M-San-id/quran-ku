@@ -128,12 +128,10 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginTop: 16,
     padding: 16,
-    // Shadow untuk iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
-    // Elevation untuk Android
     elevation: 2,
   },
   cardInternal: {
